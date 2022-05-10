@@ -1,0 +1,227 @@
+services:
+    becklyn_security.infrastructure.domain.doctrine.symfony_user_repository:
+        class: Becklyn\Security\Infrastructure\Domain\Doctrine\DoctrineSymfonyUserRepository
+        public: true
+        arguments:
+            - '@Doctrine\ORM\EntityManagerInterface'
+
+    Becklyn\Security\Infrastructure\Domain\Doctrine\DoctrineSymfonyUserRepository:
+        alias: becklyn_security.infrastructure.domain.doctrine.symfony_user_repository
+
+    Becklyn\Security\Infrastructure\Domain\Symfony\SymfonyUserRepository:
+        alias: becklyn_security.infrastructure.domain.doctrine.symfony_user_repository
+
+    Becklyn\Security\Domain\UserRepository:
+        alias: becklyn_security.infrastructure.domain.doctrine.symfony_user_repository
+
+    becklyn_security.infrastructure.domain.doctrine.symfony_user_factory:
+        class: Becklyn\Security\Infrastructure\Domain\Doctrine\DoctrineSymfonyUserFactory
+        public: false
+
+    Becklyn\Security\Infrastructure\Domain\Doctrine\DoctrineSymfonyUserFactory:
+        alias: becklyn_security.infrastructure.domain.doctrine.symfony_user_factory
+
+    Becklyn\Security\Domain\UserFactory:
+        alias: becklyn_security.infrastructure.domain.doctrine.symfony_user_factory
+
+    becklyn_security.infrastructure.domain.doctrine.symfony_create_user:
+        class: Becklyn\Security\Domain\CreateUser
+        public: false
+        arguments:
+            - '@becklyn_ddd.events.event_registry'
+            - '@becklyn_security.infrastructure.domain.doctrine.symfony_user_factory'
+            - '@becklyn_security.infrastructure.domain.symfony.encode_password_for_user'
+            - '@becklyn_security.infrastructure.domain.doctrine.symfony_user_repository'
+
+    Becklyn\Security\Domain\CreateUser:
+        alias: becklyn_security.infrastructure.domain.doctrine.symfony_create_user
+
+    becklyn_security.infrastructure.application.doctrine.symfony_create_user:
+        class: Becklyn\Security\Application\CreateUser
+        public: true
+        arguments:
+            - '@becklyn_ddd.transactions.transaction_manager'
+            - '@becklyn_security.infrastructure.domain.doctrine.symfony_user_repository'
+            - '@becklyn_security.infrastructure.domain.doctrine.symfony_create_user'
+
+    Becklyn\Security\Application\CreateUser:
+        alias: becklyn_security.infrastructure.application.doctrine.symfony_create_user
+
+    becklyn_security.infrastructure.domain.symfony.encode_password_for_user:
+        class: Becklyn\Security\Infrastructure\Domain\Symfony\SymfonyEncodePasswordForUser
+        public: false
+        arguments:
+            - '@Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface'
+
+    Becklyn\Security\Infrastructure\Domain\Symfony\SymfonyEncodePasswordForUser:
+        alias: becklyn_security.infrastructure.domain.symfony.encode_password_for_user
+
+    Becklyn\Security\Domain\EncodePasswordForUser:
+        alias: becklyn_security.infrastructure.domain.symfony.encode_password_for_user
+
+    becklyn_security.infrastructure.domain.symfony.change_password_for_user:
+        class: Becklyn\Security\Domain\ChangePasswordForUser
+        public: false
+        arguments:
+            - '@becklyn_ddd.events.event_registry'
+            - '@becklyn_security.infrastructure.domain.symfony.encode_password_for_user'
+
+    Becklyn\Security\Domain\ChangePasswordForUser:
+        alias: becklyn_security.infrastructure.domain.symfony.change_password_for_user
+
+    becklyn_security.infrastructure.application.doctrine.symfony_change_password:
+        class: Becklyn\Security\Application\ChangePassword
+        public: true
+        arguments:
+            - '@becklyn_ddd.transactions.transaction_manager'
+            - '@becklyn_security.infrastructure.domain.doctrine.symfony_user_repository'
+            - '@becklyn_security.infrastructure.domain.symfony.change_password_for_user'
+
+    Becklyn\Security\Application\ChangePassword:
+        alias: becklyn_security.infrastructure.application.doctrine.symfony_change_password
+
+    becklyn_security.infrastructure.application.symfony.security_helper:
+        class: Becklyn\Security\Infrastructure\Application\Symfony\SymfonySecurity
+        public: true
+        arguments:
+            - '@Symfony\Component\Security\Core\Security'
+
+    Becklyn\Security\Infrastructure\Application\Symfony\SymfonySecurity:
+        alias: becklyn_security.infrastructure.application.symfony.security_helper
+
+    Becklyn\Security\Application\Security:
+        alias: becklyn_security.infrastructure.application.symfony.security_helper
+
+    becklyn_security.infrastructure.application.doctrine.symfony_create_user_command:
+        class: Becklyn\Security\Infrastructure\Delivery\Cli\Symfony\CreateUserCommand
+        public: false
+        tags:
+            - { name: 'console.command', command: 'becklyn:security:create-user' }
+        arguments:
+            - '@becklyn_security.infrastructure.application.doctrine.symfony_create_user'
+
+    becklyn_security.infrastructure.application.doctrine.symfony_change_password_command:
+        class: Becklyn\Security\Infrastructure\Delivery\Cli\Symfony\ChangePasswordCommand
+        public: false
+        tags:
+            - { name: 'console.command', command: 'becklyn:security:change-password' }
+        arguments:
+            - '@becklyn_security.infrastructure.application.doctrine.symfony_change_password'
+
+    becklyn_security.infrastructure.domain.symfony.is_password_valid_for_user:
+        class: Becklyn\Security\Infrastructure\Domain\Symfony\SymfonyIsPasswordValidForUser
+        public: false
+        arguments:
+            - '@Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface'
+
+    Becklyn\Security\Infrastructure\Domain\Symfony\SymfonyIsPasswordValidForUser:
+        alias: becklyn_security.infrastructure.domain.symfony.is_password_valid_for_user
+
+    Becklyn\Security\Domain\IsPasswordValidForUser:
+        alias: becklyn_security.infrastructure.domain.symfony.is_password_valid_for_user
+
+    becklyn_security.infrastructure.application.symfony.is_password_valid:
+        class: Becklyn\Security\Application\IsPasswordValid
+        public: true
+        arguments:
+            - '@becklyn_security.infrastructure.domain.doctrine.symfony_user_repository'
+            - '@becklyn_security.infrastructure.domain.symfony.is_password_valid_for_user'
+
+    Becklyn\Security\Application\IsPasswordValid:
+        alias: becklyn_security.infrastructure.application.symfony.is_password_valid
+
+    becklyn_security.domain.generate_password_reset_token:
+        class: Becklyn\Security\Domain\GeneratePasswordResetToken
+        public: false
+
+    Becklyn\Security\Domain\GeneratePasswordResetToken:
+        alias: becklyn_security.domain.generate_password_reset_token
+
+    becklyn_security.domain.hash_password_reset_token:
+        class: Becklyn\Security\Domain\HashPasswordResetToken
+        public: false
+        arguments:
+            - ~
+
+    Becklyn\Security\Domain\HashPasswordResetToken:
+        alias: becklyn_security.domain.hash_password_reset_token
+
+    becklyn_security.domain.request_password_reset_for_user:
+        class: Becklyn\Security\Domain\RequestPasswordResetForUser
+        public: false
+        arguments:
+            - '@becklyn_ddd.events.event_registry'
+            - '@becklyn_security.domain.hash_password_reset_token'
+
+    Becklyn\Security\Domain\RequestPasswordResetForUser:
+        alias: becklyn_security.domain.request_password_reset_for_user
+
+    becklyn_security.infrastructure.application.symfony.mailer_notify_password_reset:
+        class: Becklyn\Security\Infrastructure\Domain\Symfony\SymfonyMailerNotifyPasswordReset
+        public: false
+        arguments:
+            - '@Symfony\Component\Mailer\MailerInterface'
+            - '@Symfony\Component\Routing\Generator\UrlGeneratorInterface'
+            - ~
+            - ~
+            - ~
+
+    Becklyn\Security\Infrastructure\Application\Symfony\SymfonyMailerNotifyPasswordReset:
+        alias: becklyn_security.infrastructure.application.symfony.mailer_notify_password_reset
+
+    Becklyn\Security\Application\NotifyPasswordReset:
+        alias: becklyn_security.infrastructure.application.symfony.mailer_notify_password_reset
+
+    becklyn_security.infrastructure.application.symfony.request_password_reset:
+        class: Becklyn\Security\Application\RequestPasswordReset
+        public: true
+        arguments:
+            - '@becklyn_ddd.transactions.transaction_manager'
+            - '@becklyn_security.infrastructure.domain.doctrine.symfony_user_repository'
+            - '@becklyn_security.domain.generate_password_reset_token'
+            - '@becklyn_security.domain.request_password_reset_for_user'
+            - '@becklyn_security.infrastructure.application.symfony.mailer_notify_password_reset'
+
+    Becklyn\Security\Application\RequestPasswordReset:
+        alias: becklyn_security.infrastructure.application.symfony.request_password_reset
+
+    becklyn_security.infrastructure.domain.doctrine.find_user_for_password_reset:
+        class: Becklyn\Security\Domain\FindUserForPasswordReset
+        public: false
+        arguments:
+            - '@becklyn_security.infrastructure.domain.doctrine.symfony_user_repository'
+            - '@becklyn_security.domain.hash_password_reset_token'
+
+    Becklyn\Security\Domain\FindUserForPasswordReset:
+        alias: becklyn_security.infrastructure.domain.doctrine.find_user_for_password_reset
+
+    becklyn_security.infrastructure.application.doctrine.find_user_for_password_reset:
+        class: Becklyn\Security\Application\FindEmailForPasswordReset
+        public: true
+        arguments:
+            - '@becklyn_security.infrastructure.domain.doctrine.find_user_for_password_reset'
+            - ~
+
+    Becklyn\Security\Application\FindEmailForPasswordReset:
+        alias: becklyn_security.infrastructure.application.doctrine.find_user_for_password_reset
+
+    becklyn_security.infrastructure.domain.symfony.reset_password_for_user:
+        class: Becklyn\Security\Domain\ResetPasswordForUser
+        public: false
+        arguments:
+            - '@becklyn_ddd.events.event_registry'
+            - '@becklyn_security.infrastructure.domain.symfony.encode_password_for_user'
+
+    Becklyn\Security\Domain\ResetPasswordForUser:
+        alias: becklyn_security.infrastructure.domain.symfony.reset_password_for_user
+
+    becklyn_security.infrastructure.application.doctrine.symfony_reset_password:
+        class: Becklyn\Security\Application\ResetPassword
+        public: true
+        arguments:
+            - '@becklyn_ddd.transactions.transaction_manager'
+            - '@becklyn_security.infrastructure.domain.doctrine.symfony_user_repository'
+            - '@becklyn_security.infrastructure.domain.symfony.reset_password_for_user'
+
+    Becklyn\Security\Application\ResetPassword:
+        alias: becklyn_security.infrastructure.application.doctrine.symfony_reset_password
