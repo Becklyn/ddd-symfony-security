@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Becklyn\Security\Infrastructure\Delivery\Cli\Symfony;
 
@@ -10,28 +10,25 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * @author Marko Vujnovic <mv@201created.de>
+ *
  * @since  2020-03-03
  */
 class ChangePasswordCommand extends Command
 {
-    private ChangePassword $changePassword;
+    protected static $defaultName = 'becklyn:security:change-password';
 
-    protected function configure()
+    protected function configure() : void
     {
-        $this
-            ->setName('becklyn:security:change-password')
-            ->addArgument('email', InputArgument::REQUIRED, 'email of user whose password to change')
-            ->addArgument('password', InputArgument::REQUIRED, 'new password to set')
-        ;
+        $this->addArgument('email', InputArgument::REQUIRED, 'email of user whose password to change')
+            ->addArgument('password', InputArgument::REQUIRED, 'new password to set');
     }
 
-    public function __construct(ChangePassword $changePassword)
+    public function __construct(private readonly ChangePassword $changePassword)
     {
         parent::__construct();
-        $this->changePassword = $changePassword;
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output): int
+    protected function execute(InputInterface $input, OutputInterface $output) : int
     {
         $email = $input->getArgument('email');
         $password = $input->getArgument('password');

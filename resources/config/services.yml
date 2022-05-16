@@ -51,7 +51,7 @@ services:
         class: Becklyn\Security\Infrastructure\Domain\Symfony\SymfonyEncodePasswordForUser
         public: false
         arguments:
-            - '@Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface'
+            - '@Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface'
 
     Becklyn\Security\Infrastructure\Domain\Symfony\SymfonyEncodePasswordForUser:
         alias: becklyn_security.infrastructure.domain.symfony.encode_password_for_user
@@ -112,7 +112,7 @@ services:
         class: Becklyn\Security\Infrastructure\Domain\Symfony\SymfonyIsPasswordValidForUser
         public: false
         arguments:
-            - '@Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface'
+            - '@Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface'
 
     Becklyn\Security\Infrastructure\Domain\Symfony\SymfonyIsPasswordValidForUser:
         alias: becklyn_security.infrastructure.domain.symfony.is_password_valid_for_user

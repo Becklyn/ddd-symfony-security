@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Becklyn\Security\DependencyInjection;
 
@@ -7,6 +7,7 @@ use Symfony\Component\Config\Definition\ConfigurationInterface;
 
 /**
  * @author Marko Vujnovic <mv@201created.de>
+ *
  * @since  2020-04-27
  */
 class Configuration implements ConfigurationInterface

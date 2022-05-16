@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Becklyn\Security\Infrastructure\Delivery\Cli\Symfony;
 
@@ -10,28 +10,25 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * @author Marko Vujnovic <mv@201created.de>
+ *
  * @since  2020-03-02
  */
 class CreateUserCommand extends Command
 {
-    private CreateUser $createUser;
+    protected static $defaultName = 'becklyn:security:create-user';
 
-    protected function configure()
+    protected function configure() : void
     {
-        $this
-            ->setName('becklyn:security:create-user')
-            ->addArgument('email', InputArgument::REQUIRED, "user's email")
-            ->addArgument('password', InputArgument::REQUIRED, "user's password")
-        ;
+        $this->addArgument('email', InputArgument::REQUIRED, "user's email")
+            ->addArgument('password', InputArgument::REQUIRED, "user's password");
     }
 
-    public function __construct(CreateUser $createUser)
+    public function __construct(private readonly CreateUser $createUser)
     {
         parent::__construct();
-        $this->createUser = $createUser;
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output): int
+    protected function execute(InputInterface $input, OutputInterface $output) : int
     {
         $email = $input->getArgument('email');
         $password = $input->getArgument('password');

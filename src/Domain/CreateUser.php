@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Becklyn\Security\Domain;
 
@@ -6,28 +6,21 @@ use Becklyn\Ddd\Events\Domain\EventRegistry;
 
 /**
  * @author Marko Vujnovic <mv@201created.de>
+ *
  * @since  2020-04-30
  */
 class CreateUser
 {
-    private EventRegistry $eventRegistry;
-    private UserFactory $userFactory;
-    private EncodePasswordForUser $encodePasswordForUser;
-    private UserRepository $userRepository;
-
     public function __construct(
-        EventRegistry $eventRegistry,
-        UserFactory $userFactory,
-        EncodePasswordForUser $encodePasswordForUser,
-        UserRepository $userRepository
-    ) {
-        $this->eventRegistry = $eventRegistry;
-        $this->userFactory = $userFactory;
-        $this->encodePasswordForUser = $encodePasswordForUser;
-        $this->userRepository = $userRepository;
+        private readonly EventRegistry $eventRegistry,
+        private readonly UserFactory $userFactory,
+        private readonly EncodePasswordForUser $encodePasswordForUser,
+        private readonly UserRepository $userRepository
+    )
+    {
     }
 
-    public function execute(UserId $id, string $email, string $plainPassword): void
+    public function execute(UserId $id, string $email, string $plainPassword) : void
     {
         $user = $this->userFactory->create($id, $email, $plainPassword);
         $this->eventRegistry->dequeueProviderAndRegister($user);

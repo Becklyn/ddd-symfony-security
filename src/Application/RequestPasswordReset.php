@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Becklyn\Security\Application;
 
@@ -11,31 +11,22 @@ use Becklyn\Security\Domain\UserRepository;
 
 /**
  * @author Marko Vujnovic <mv@201created.de>
+ *
  * @since  2020-04-27
  */
 class RequestPasswordReset
 {
-    private TransactionManager $transactionManager;
-    private UserRepository $userRepository;
-    private GeneratePasswordResetToken $generatePasswordResetToken;
-    private RequestPasswordResetForUser $requestPasswordResetForUser;
-    private NotifyPasswordReset $notifyPasswordReset;
-
     public function __construct(
-        TransactionManager $transactionManager,
-        UserRepository $userRepository,
-        GeneratePasswordResetToken $generatePasswordResetToken,
-        RequestPasswordResetForUser $requestPasswordResetForUser,
-        NotifyPasswordReset $notifyPasswordReset
-    ) {
-        $this->transactionManager = $transactionManager;
-        $this->userRepository = $userRepository;
-        $this->generatePasswordResetToken = $generatePasswordResetToken;
-        $this->requestPasswordResetForUser = $requestPasswordResetForUser;
-        $this->notifyPasswordReset = $notifyPasswordReset;
+        private readonly TransactionManager $transactionManager,
+        private readonly UserRepository $userRepository,
+        private readonly GeneratePasswordResetToken $generatePasswordResetToken,
+        private readonly RequestPasswordResetForUser $requestPasswordResetForUser,
+        private readonly NotifyPasswordReset $notifyPasswordReset
+    )
+    {
     }
 
-    public function execute(string $email): void
+    public function execute(string $email) : void
     {
         $this->transactionManager->begin();
 

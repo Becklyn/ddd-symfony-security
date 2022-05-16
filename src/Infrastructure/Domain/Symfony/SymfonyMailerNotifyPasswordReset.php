@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Becklyn\Security\Infrastructure\Domain\Symfony;
 
@@ -10,39 +10,39 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 /**
  * @author Marko Vujnovic <mv@201created.de>
+ *
  * @since  2020-04-27
  */
 class SymfonyMailerNotifyPasswordReset implements NotifyPasswordReset
 {
-    private MailerInterface $mailer;
-    private UrlGeneratorInterface $router;
-    private string $passwordResetRoute;
-    private string $resetEmailFrom;
-    private string $resetEmailSubject;
-
-    public function __construct(MailerInterface $mailer, UrlGeneratorInterface $router, string $passwordResetRoute, string $resetEmailFrom, string $resetEmailSubject)
+    public function __construct(
+        private readonly MailerInterface $mailer,
+        private readonly UrlGeneratorInterface $router,
+        private readonly string $passwordResetRoute,
+        private readonly string $resetEmailFrom,
+        private readonly string $resetEmailSubject
+    )
     {
-        $this->mailer = $mailer;
-        $this->router = $router;
-        $this->passwordResetRoute = $passwordResetRoute;
-        $this->resetEmailFrom = $resetEmailFrom;
-        $this->resetEmailSubject = $resetEmailSubject;
     }
 
-    public function execute(User $user, string $passwordResetToken): void
+    public function execute(User $user, string $passwordResetToken) : void
     {
         $errors = [];
+
         if (empty($this->passwordResetRoute)) {
             $errors[] = 'reset_password.route';
         }
+
         if (empty($this->resetEmailFrom)) {
             $errors[] = 'reset_password.email_from';
         }
+
         if (empty($this->resetEmailSubject)) {
             $errors[] = 'reset_password.email_subject';
         }
+
         if (!empty($errors)) {
-            throw new \Exception('The following configuration options are not set in becklyn_security.yaml: ' . implode(', ', $errors));
+            throw new \Exception('The following configuration options are not set in becklyn_security.yaml: ' . \implode(', ', $errors));
         }
 
         $route = $this->router->generate($this->passwordResetRoute, ['token' => $passwordResetToken], UrlGeneratorInterface::ABSOLUTE_URL);
@@ -52,8 +52,8 @@ class SymfonyMailerNotifyPasswordReset implements NotifyPasswordReset
             ->to($user->email())
             ->subject($this->resetEmailSubject)
             // TODO insert proper text here and extract it into a twig/inky template
-            ->text("Sie haben ein Passwort-Reset angefordert. Bitte besuchen sie folgendes URL: $route")
-            ->html("<p>Sie haben ein Passwort-Reset angefordert. Bitte besuchen sie folgendes URL:</p><p><a href='$route'>$route</a></p>");
+            ->text("Sie haben ein Passwort-Reset angefordert. Bitte besuchen sie folgendes URL: {$route}")
+            ->html("<p>Sie haben ein Passwort-Reset angefordert. Bitte besuchen sie folgendes URL:</p><p><a href='{$route}'>{$route}</a></p>");
 
         $this->mailer->send($email);
     }

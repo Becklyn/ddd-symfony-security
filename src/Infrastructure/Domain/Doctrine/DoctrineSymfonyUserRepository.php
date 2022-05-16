@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Becklyn\Security\Infrastructure\Domain\Doctrine;
 
@@ -7,40 +7,32 @@ use Becklyn\Security\Domain\UserId;
 use Becklyn\Security\Domain\UserNotFoundException;
 use Becklyn\Security\Infrastructure\Domain\Symfony\SymfonyUserRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\EntityRepository;
 
 /**
  * @author Marko Vujnovic <mv@201created.de>
+ *
  * @since  2020-03-03
  */
 class DoctrineSymfonyUserRepository implements SymfonyUserRepository
 {
-    /**
-     * @var EntityManagerInterface
-     */
-    private $entityManager;
+    private readonly \Doctrine\ORM\EntityRepository $repository;
 
-    /**
-     * @var EntityRepository
-     */
-    private $repository;
-
-    public function __construct(EntityManagerInterface $entityManager)
+    public function __construct(private readonly EntityManagerInterface $entityManager)
     {
-        $this->entityManager = $entityManager;
         $this->repository = $entityManager->getRepository(DoctrineSymfonyUser::class);
     }
 
-    public function nextIdentity(): UserId
+    public function nextIdentity() : UserId
     {
         return UserId::next();
     }
 
     /**
      * @inheritDoc
+     *
      * @param DoctrineSymfonyUser $user
      */
-    public function add(User $user): void
+    public function add(User $user) : void
     {
         $this->entityManager->persist($user);
     }
@@ -48,13 +40,13 @@ class DoctrineSymfonyUserRepository implements SymfonyUserRepository
     /**
      * @inheritDoc
      */
-    public function findOneByEmail(string $email): DoctrineSymfonyUser
+    public function findOneByEmail(string $email) : DoctrineSymfonyUser
     {
-        /** @var DoctrineSymfonyUser $user */
+        /** @var DoctrineSymfonyUser|null $user */
         $user = $this->repository->findOneBy(['email' => $email]);
 
-        if (!$user) {
-            throw new UserNotFoundException("User $email not found");
+        if (null === $user) {
+            throw new UserNotFoundException("User {$email} not found");
         }
 
         return $user;
@@ -63,13 +55,13 @@ class DoctrineSymfonyUserRepository implements SymfonyUserRepository
     /**
      * @inheritDoc
      */
-    public function findOneByPasswordResetToken(string $token): DoctrineSymfonyUser
+    public function findOneByPasswordResetToken(string $token) : DoctrineSymfonyUser
     {
-        /** @var DoctrineSymfonyUser $user */
+        /** @var DoctrineSymfonyUser|null $user */
         $user = $this->repository->findOneBy(['passwordResetToken' => $token]);
 
-        if (!$user) {
-            throw new UserNotFoundException("No user with password reset token $token found");
+        if (null === $user) {
+            throw new UserNotFoundException("No user with password reset token {$token} found");
         }
 
         return $user;

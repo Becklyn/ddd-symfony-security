@@ -3,7 +3,7 @@
     "description": "Security component used in legacy 201Created projects",
     "type": "symfony-bundle",
     "license": "MIT",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "authors": [
         {
             "name": "Marko Vujnovic",
