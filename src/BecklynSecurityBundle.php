@@ -17,7 +17,7 @@ class BecklynSecurityBundle extends Bundle
         parent::build($container);
 
         $namespaces = ['Becklyn\Security\Infrastructure\Domain\Doctrine'];
-        $directories = [realpath(__DIR__ . '/Infrastructure/Store/Doctrine')];
+        $directories = [realpath(__DIR__ . '/Infrastructure/Domain/Doctrine')];
         $managerParameters = [];
         $enabledParameter = false;
         $aliasMap = [];
