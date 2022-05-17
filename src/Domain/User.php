@@ -3,7 +3,6 @@
 namespace Becklyn\Security\Domain;
 
 use Becklyn\Ddd\Events\Domain\EventProvider;
-use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Illuminate\Support\Collection;
 
 /**
@@ -11,7 +10,7 @@ use Illuminate\Support\Collection;
  *
  * @since  2020-03-02
  */
-interface User extends EventProvider, PasswordAuthenticatedUserInterface
+interface User extends EventProvider
 {
     public function id() : UserId;
 

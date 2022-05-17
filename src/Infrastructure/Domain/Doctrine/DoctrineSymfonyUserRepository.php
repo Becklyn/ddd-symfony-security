@@ -7,6 +7,7 @@ use Becklyn\Security\Domain\UserId;
 use Becklyn\Security\Domain\UserNotFoundException;
 use Becklyn\Security\Infrastructure\Domain\Symfony\SymfonyUserRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\EntityRepository;
 
 /**
  * @author Marko Vujnovic <mv@201created.de>
@@ -15,7 +16,7 @@ use Doctrine\ORM\EntityManagerInterface;
  */
 class DoctrineSymfonyUserRepository implements SymfonyUserRepository
 {
-    private readonly \Doctrine\ORM\EntityRepository $repository;
+    private readonly EntityRepository $repository;
 
     public function __construct(private readonly EntityManagerInterface $entityManager)
     {

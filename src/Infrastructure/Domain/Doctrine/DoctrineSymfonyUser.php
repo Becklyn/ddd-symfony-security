@@ -16,7 +16,6 @@ use Becklyn\Security\Domain\UserEnabled;
 use Becklyn\Security\Domain\UserId;
 use Becklyn\Security\Infrastructure\Domain\Symfony\SymfonyUser;
 use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Mapping\Annotation as Gedmo;
 use Illuminate\Support\Collection;
 
 /**
@@ -83,13 +82,11 @@ class DoctrineSymfonyUser implements SymfonyUser
 
     /**
      * @ORM\Column(type="datetime_immutable", nullable=false)
-     * @Gedmo\Timestampable(on="create")
      */
     protected \DateTimeImmutable $createdTs;
 
     /**
      * @ORM\Column(type="datetime_immutable", nullable=false)
-     * @Gedmo\Timestampable(on="update")
      */
     protected \DateTimeImmutable $updatedTs;
 
@@ -104,6 +101,8 @@ class DoctrineSymfonyUser implements SymfonyUser
         $user->email = $email;
         $user->password = $password;
         $user->raiseEvent(new UserCreated($user->nextEventIdentity(), new \DateTimeImmutable(), $id, $email));
+        $user->createdTs = new \DateTimeImmutable();
+        $user->updatedTs = new \DateTimeImmutable();
         return $user;
     }
 
@@ -138,6 +137,7 @@ class DoctrineSymfonyUser implements SymfonyUser
         if (!$this->hasRole($role)) {
             $this->roles[] = $role;
             $this->raiseEvent(new RoleAddedToUser($this->nextEventIdentity(), new \DateTimeImmutable(), $this->id(), $role));
+            $this->markAsModified();
         }
 
         return $this;
@@ -151,6 +151,7 @@ class DoctrineSymfonyUser implements SymfonyUser
             unset($this->roles[$key]);
             $this->roles = \array_values($this->roles);
             $this->raiseEvent(new RoleRemovedFromUser($this->nextEventIdentity(), new \DateTimeImmutable(), $this->id(), $role));
+            $this->markAsModified();
         }
 
         return $this;
@@ -160,6 +161,7 @@ class DoctrineSymfonyUser implements SymfonyUser
     {
         $this->password = $newPassword;
         $this->raiseEvent(new PasswordChanged($this->nextEventIdentity(), new \DateTimeImmutable(), $this->id()));
+        $this->markAsModified();
         return $this;
     }
 
@@ -173,6 +175,7 @@ class DoctrineSymfonyUser implements SymfonyUser
         if (!$this->enabled) {
             $this->enabled = true;
             $this->raiseEvent(new UserEnabled($this->nextEventIdentity(), new \DateTimeImmutable(), $this->id()));
+            $this->markAsModified();
         }
         return $this;
     }
@@ -182,6 +185,7 @@ class DoctrineSymfonyUser implements SymfonyUser
         if ($this->enabled) {
             $this->enabled = false;
             $this->raiseEvent(new UserDisabled($this->nextEventIdentity(), new \DateTimeImmutable(), $this->id()));
+            $this->markAsModified();
         }
         return $this;
     }
@@ -193,6 +197,7 @@ class DoctrineSymfonyUser implements SymfonyUser
         $this->raiseEvent(
             new PasswordResetRequested($this->nextEventIdentity(), new \DateTimeImmutable(), $this->id(), $passwordResetToken, $this->passwordResetRequestTs)
         );
+        $this->markAsModified();
         return $this;
     }
 
@@ -219,6 +224,7 @@ class DoctrineSymfonyUser implements SymfonyUser
         $this->passwordResetToken = null;
         $this->passwordResetRequestTs = null;
         $this->raiseEvent(new PasswordReset($this->nextEventIdentity(), new \DateTimeImmutable(), $this->id()));
+        $this->markAsModified();
         return $this;
     }
 
@@ -301,5 +307,11 @@ class DoctrineSymfonyUser implements SymfonyUser
     public function getUserIdentifier () : string
     {
         return $this->getUsername();
+    }
+
+
+    public function  markAsModified () : void
+    {
+        $this->updatedTs = new \DateTimeImmutable();
     }
 }

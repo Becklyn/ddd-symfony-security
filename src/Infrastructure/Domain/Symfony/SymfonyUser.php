@@ -3,6 +3,7 @@
 namespace Becklyn\Security\Infrastructure\Domain\Symfony;
 
 use Becklyn\Security\Domain\User;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
@@ -10,6 +11,6 @@ use Symfony\Component\Security\Core\User\UserInterface;
  *
  * @since  2020-04-02
  */
-interface SymfonyUser extends User, UserInterface
+interface SymfonyUser extends User, UserInterface, PasswordAuthenticatedUserInterface
 {
 }
