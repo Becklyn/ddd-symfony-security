@@ -1,3 +1,9 @@
+1.0.2
+=====
+
+* (bugfix) Deleted old Doctrine XML Mapping Drivers. Fixed Entity Directories for Annotation Mapping.
+
+
 1.0.1
 =====
 
