@@ -310,7 +310,7 @@ class DoctrineSymfonyUser implements SymfonyUser
     }
 
 
-    public function  markAsModified () : void
+    protected function markAsModified () : void
     {
         $this->updatedTs = new \DateTimeImmutable();
     }
