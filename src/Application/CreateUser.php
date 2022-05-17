@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Becklyn\Security\Application;
 
@@ -9,24 +9,19 @@ use Becklyn\Security\Domain\UserRepository;
 
 /**
  * @author Marko Vujnovic <mv@201created.de>
+ *
  * @since  2020-03-03
  */
 class CreateUser
 {
-    private TransactionManager $transactionManager;
-    private UserRepository $userRepository;
-    private DomainCreateUser $createUser;
-
     public function __construct(
-        TransactionManager $transactionManager,
-        UserRepository $userRepository,
-        DomainCreateUser $createUser
-    ) {
-        $this->transactionManager = $transactionManager;
-        $this->userRepository = $userRepository;
-        $this->createUser = $createUser;
+        private readonly TransactionManager $transactionManager,
+        private readonly UserRepository $userRepository,
+        private readonly DomainCreateUser $createUser
+    )
+    {
     }
-    public function execute(string $email, string $plainPassword): UserId
+    public function execute(string $email, string $plainPassword) : UserId
     {
         $this->transactionManager->begin();
 

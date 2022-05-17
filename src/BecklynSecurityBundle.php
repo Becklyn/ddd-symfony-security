@@ -16,10 +16,19 @@ class BecklynSecurityBundle extends Bundle
     {
         parent::build($container);
 
-        $mappings = [
-            realpath(__DIR__ . '/../resources/config/doctrine-mapping') => 'Becklyn\Security\Infrastructure\Domain\Doctrine',
-        ];
-
-        $container->addCompilerPass(DoctrineOrmMappingsPass::createXmlMappingDriver($mappings));
+        $namespaces = ['Becklyn\Security\Infrastructure\Domain\Doctrine'];
+        $directories = [realpath(__DIR__ . '/Infrastructure/Store/Doctrine')];
+        $managerParameters = [];
+        $enabledParameter = false;
+        $aliasMap = [];
+        $container->addCompilerPass(
+            DoctrineOrmMappingsPass::createAnnotationMappingDriver(
+                $namespaces,
+                $directories,
+                $managerParameters,
+                $enabledParameter,
+                $aliasMap
+            )
+        );
     }
 }

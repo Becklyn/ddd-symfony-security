@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Becklyn\Security\DependencyInjection;
 
@@ -9,18 +9,19 @@ use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 
 /**
  * @author Marko Vujnovic <mv@201created.de>
+ *
  * @since  2020-04-22
  */
 class BecklynSecurityExtension extends Extension
 {
-    public function load(array $configs, ContainerBuilder $container)
+    public function load(array $configs, ContainerBuilder $container) : void
     {
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
 
         $loader = new YamlFileLoader(
             $container,
-            new FileLocator(__DIR__.'/../../resources/config')
+            new FileLocator(__DIR__ . '/../../resources/config')
         );
         $loader->load('services.yml');
 
