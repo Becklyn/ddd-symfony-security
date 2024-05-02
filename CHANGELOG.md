@@ -1,3 +1,8 @@
+1.0.4
+=====
+
+* (bugfix) Fix ChangePassword for newer Versions of Becklyn\DDD Bundle.
+
 1.0.3
 =====
 
