@@ -3,6 +3,7 @@
 namespace Becklyn\Security\Domain;
 
 use Becklyn\Ddd\Events\Domain\EventRegistry;
+use Becklyn\Security\Application\ChangePassword;
 
 /**
  * @author Marko Vujnovic <mv@201created.de>
@@ -18,10 +19,10 @@ class ChangePasswordForUser
     {
     }
 
-    public function execute(User $user, string $newPlainPassword) : void
+    public function execute(User $user, string $newPlainPassword, ChangePassword $command) : void
     {
         $newEncodedPassword = $this->encodePasswordForUser->execute($user, $newPlainPassword);
         $user->changePassword($newEncodedPassword);
-        $this->eventRegistry->dequeueProviderAndRegister($user);
+        $this->eventRegistry->dequeueProviderAndRegister($user, $command);
     }
 }

@@ -2,6 +2,7 @@
 
 namespace Becklyn\Security\Application;
 
+use Becklyn\Ddd\Commands\Domain\AbstractCommand;
 use Becklyn\Ddd\Transactions\Application\TransactionManager;
 use Becklyn\Security\Domain\ChangePasswordForUser;
 use Becklyn\Security\Domain\UserNotFoundException;
@@ -12,14 +13,14 @@ use Becklyn\Security\Domain\UserRepository;
  *
  * @since  2020-03-03
  */
-class ChangePassword
+class ChangePassword extends AbstractCommand
 {
     public function __construct(
         private readonly TransactionManager $transactionManager,
         private readonly UserRepository $userRepository,
         private readonly ChangePasswordForUser $changePasswordForUser
-    )
-    {
+    ) {
+        parent::__construct();
     }
 
     /**
@@ -31,7 +32,7 @@ class ChangePassword
 
         try {
             $user = $this->userRepository->findOneByEmail($email);
-            $this->changePasswordForUser->execute($user, $newPlainPassword);
+            $this->changePasswordForUser->execute($user, $newPlainPassword, $this);
         } catch (\Exception $e) {
             $this->transactionManager->rollback();
             throw $e;
