@@ -3,6 +3,7 @@
 namespace Becklyn\Security\Domain;
 
 use Becklyn\Ddd\Events\Domain\EventRegistry;
+use Becklyn\Security\Application\RequestPasswordReset;
 
 /**
  * @author Marko Vujnovic <mv@201created.de>
@@ -18,10 +19,10 @@ class RequestPasswordResetForUser
     {
     }
 
-    public function execute(User $user, string $passwordResetToken) : void
+    public function execute(User $user, string $passwordResetToken, RequestPasswordReset $command) : void
     {
         $hashedToken = $this->hashPasswordResetToken->execute($passwordResetToken);
         $user->requestPasswordReset($hashedToken);
-        $this->eventRegistry->dequeueProviderAndRegister($user);
+        $this->eventRegistry->dequeueProviderAndRegister($user, $command);
     }
 }

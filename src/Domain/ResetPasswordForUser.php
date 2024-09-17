@@ -3,6 +3,7 @@
 namespace Becklyn\Security\Domain;
 
 use Becklyn\Ddd\Events\Domain\EventRegistry;
+use Becklyn\Security\Application\ResetPassword;
 
 /**
  * @author Marko Vujnovic <mv@201created.de>
@@ -18,10 +19,10 @@ class ResetPasswordForUser
     {
     }
 
-    public function execute(User $user, string $newPlainPassword) : void
+    public function execute(User $user, string $newPlainPassword, ResetPassword $command) : void
     {
         $newEncodedPassword = $this->encodePasswordForUser->execute($user, $newPlainPassword);
         $user->resetPassword($newEncodedPassword);
-        $this->eventRegistry->dequeueProviderAndRegister($user);
+        $this->eventRegistry->dequeueProviderAndRegister($user, $command);
     }
 }

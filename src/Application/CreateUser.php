@@ -2,6 +2,7 @@
 
 namespace Becklyn\Security\Application;
 
+use Becklyn\Ddd\Commands\Domain\AbstractCommand;
 use Becklyn\Ddd\Transactions\Application\TransactionManager;
 use Becklyn\Security\Domain\CreateUser as DomainCreateUser;
 use Becklyn\Security\Domain\UserId;
@@ -12,7 +13,7 @@ use Becklyn\Security\Domain\UserRepository;
  *
  * @since  2020-03-03
  */
-class CreateUser
+class CreateUser extends AbstractCommand
 {
     public function __construct(
         private readonly TransactionManager $transactionManager,
@@ -20,14 +21,17 @@ class CreateUser
         private readonly DomainCreateUser $createUser
     )
     {
+        parent::__construct();
     }
+
+
     public function execute(string $email, string $plainPassword) : UserId
     {
         $this->transactionManager->begin();
 
         try {
             $id = $this->userRepository->nextIdentity();
-            $this->createUser->execute($id, $email, $plainPassword);
+            $this->createUser->execute($id, $email, $plainPassword, $this);
         } catch (\Exception $e) {
             $this->transactionManager->rollback();
             throw $e;
