@@ -3,6 +3,7 @@
 namespace Becklyn\Security\Domain;
 
 use Becklyn\Ddd\Events\Domain\EventRegistry;
+use Becklyn\Security\Application\CreateUser as CreateUserCommand;
 
 /**
  * @author Marko Vujnovic <mv@201created.de>
@@ -20,10 +21,10 @@ class CreateUser
     {
     }
 
-    public function execute(UserId $id, string $email, string $plainPassword) : void
+    public function execute(UserId $id, string $email, string $plainPassword, CreateUserCommand $command) : void
     {
         $user = $this->userFactory->create($id, $email, $plainPassword);
-        $this->eventRegistry->dequeueProviderAndRegister($user);
+        $this->eventRegistry->dequeueProviderAndRegister($user, $command);
 
         $encodedPassword = $this->encodePasswordForUser->execute($user, $plainPassword);
         $user->changePassword($encodedPassword);

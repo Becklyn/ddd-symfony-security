@@ -2,6 +2,7 @@
 
 namespace Becklyn\Security\Application;
 
+use Becklyn\Ddd\Commands\Domain\AbstractCommand;
 use Becklyn\Ddd\Transactions\Application\TransactionManager;
 use Becklyn\Security\Domain\GeneratePasswordResetToken;
 use Becklyn\Security\Domain\NotifyPasswordReset;
@@ -14,7 +15,7 @@ use Becklyn\Security\Domain\UserRepository;
  *
  * @since  2020-04-27
  */
-class RequestPasswordReset
+class RequestPasswordReset extends AbstractCommand
 {
     public function __construct(
         private readonly TransactionManager $transactionManager,
@@ -24,6 +25,7 @@ class RequestPasswordReset
         private readonly NotifyPasswordReset $notifyPasswordReset
     )
     {
+        parent::__construct();
     }
 
     public function execute(string $email) : void
@@ -33,7 +35,7 @@ class RequestPasswordReset
         try {
             $user = $this->userRepository->findOneByEmail($email);
             $token = $this->generatePasswordResetToken->execute();
-            $this->requestPasswordResetForUser->execute($user, $token);
+            $this->requestPasswordResetForUser->execute($user, $token, $this);
         } catch (UserNotFoundException $e) {
             $this->transactionManager->rollback();
             return;

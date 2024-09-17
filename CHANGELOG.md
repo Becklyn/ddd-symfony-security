@@ -1,3 +1,8 @@
+1.0.5
+=====
+
+* (bugfix) Fix all the rest of the Application Commands for newer Versions of Becklyn\DDD Bundle.
+
 1.0.4
 =====
 
