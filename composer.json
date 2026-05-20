@@ -19,7 +19,7 @@
         "becklyn/ddd-core": "^4.0",
         "becklyn/ddd-doctrine-bridge": "^3.0",
         "becklyn/ddd-symfony-bridge": "^6.0",
-        "becklyn/utilities": "^2.0",
+        "becklyn/utilities": "^3.0",
         "doctrine/doctrine-bundle": "^2.0",
         "doctrine/orm": "^2.12 || ^3.0",
         "stof/doctrine-extensions-bundle": "^1.4",
