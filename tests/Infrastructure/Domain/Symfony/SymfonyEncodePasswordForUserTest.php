@@ -8,7 +8,7 @@ use Becklyn\Security\Infrastructure\Domain\Symfony\SymfonyUserTestTrait;
 use PHPUnit\Framework\TestCase;
 use Prophecy\PhpUnit\ProphecyTrait;
 use Prophecy\Prophecy\ObjectProphecy;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class SymfonyEncodePasswordForUserTest extends TestCase
 {
@@ -17,7 +17,7 @@ class SymfonyEncodePasswordForUserTest extends TestCase
     use SymfonyUserTestTrait;
 
     /**
-     * @var ObjectProphecy|UserPasswordEncoderInterface
+     * @var ObjectProphecy|UserPasswordHasherInterface
      */
     private ObjectProphecy $encoder;
 
@@ -25,7 +25,7 @@ class SymfonyEncodePasswordForUserTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->encoder = $this->prophesize(UserPasswordEncoderInterface::class);
+        $this->encoder = $this->prophesize(UserPasswordHasherInterface::class);
         $this->fixture = new SymfonyEncodePasswordForUser($this->encoder->reveal());
     }
 
@@ -43,7 +43,7 @@ class SymfonyEncodePasswordForUserTest extends TestCase
 
     private function givenEncoderEncodesPasswordForUser(ObjectProphecy $user, string $plainPassword, string $encodedPassword): void
     {
-        $this->encoder->encodePassword($user->reveal(), $plainPassword)->willReturn($encodedPassword);
+        $this->encoder->hashPassword($user->reveal(), $plainPassword)->willReturn($encodedPassword);
     }
 
     private function thenEncodedPasswordShouldBeReturned(string $expected, string $actual): void

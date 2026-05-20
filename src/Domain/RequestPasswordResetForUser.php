@@ -19,7 +19,7 @@ class RequestPasswordResetForUser
     {
     }
 
-    public function execute(User $user, string $passwordResetToken, RequestPasswordReset $command) : void
+    public function execute(User $user, string $passwordResetToken, RequestPasswordReset $command): void
     {
         $hashedToken = $this->hashPasswordResetToken->execute($passwordResetToken);
         $user->requestPasswordReset($hashedToken);

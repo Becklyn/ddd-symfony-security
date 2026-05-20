@@ -3,36 +3,52 @@
 namespace Becklyn\Security\Tests\Infrastructure\Application\Symfony;
 
 use Becklyn\Security\Infrastructure\Application\Symfony\SymfonySecurity;
+use Becklyn\Security\Infrastructure\Domain\Symfony\SymfonyUser;
 use PHPUnit\Framework\TestCase;
 use Prophecy\PhpUnit\ProphecyTrait;
 use Prophecy\Prophecy\ObjectProphecy;
-use Symfony\Component\Security\Core\Security as BaseSymfonySecurity;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 
-/**
- * @author Marko Vujnovic <mv@201created.de>
- * @since  2020-04-16
- */
 class SymfonySecurityTest extends TestCase
 {
     use ProphecyTrait;
 
     /**
-     * @var BaseSymfonySecurity|ObjectProphecy
+     * @var TokenStorageInterface|ObjectProphecy
      */
-    private $baseSecurity;
+    private $tokenStorage;
 
     private SymfonySecurity $fixture;
 
     protected function setUp(): void
     {
-        $this->baseSecurity = $this->prophesize(BaseSymfonySecurity::class);
-        $this->fixture = new SymfonySecurity($this->baseSecurity->reveal());
+        $this->tokenStorage = $this->prophesize(TokenStorageInterface::class);
+        $this->fixture = new SymfonySecurity($this->tokenStorage->reveal());
     }
 
-    public function testGetUserReturnsResultOfBaseSymfonySecurityGetUser(): void
+    public function testGetUserReturnsNullIfNoTokenExists(): void
     {
-        $expectedResult = null;
-        $this->baseSecurity->getUser()->willReturn(null);
-        $this->assertSame($expectedResult, $this->fixture->getUser());
+        $this->tokenStorage->getToken()->willReturn(null);
+        $this->assertNull($this->fixture->getUser());
+    }
+
+    public function testGetUserReturnsSymfonyUserIfTokenContainsSymfonyUser(): void
+    {
+        $user = $this->prophesize(SymfonyUser::class)->reveal();
+        $token = $this->prophesize(TokenInterface::class);
+        $token->getUser()->willReturn($user);
+        $this->tokenStorage->getToken()->willReturn($token->reveal());
+        $this->assertSame($user, $this->fixture->getUser());
+    }
+
+    public function testGetUserReturnsNullIfTokenUserIsNotSymfonyUser(): void
+    {
+        $nonSymfonyUser = $this->prophesize(UserInterface::class)->reveal();
+        $token = $this->prophesize(TokenInterface::class);
+        $token->getUser()->willReturn($nonSymfonyUser);
+        $this->tokenStorage->getToken()->willReturn($token->reveal());
+        $this->assertNull($this->fixture->getUser());
     }
 }

@@ -2,7 +2,7 @@
 
 namespace Becklyn\Security\Tests\Application;
 
-use Becklyn\Ddd\Transactions\Application\TransactionManagerTestTrait;
+use Becklyn\Ddd\Transactions\Testing\TransactionManagerTestTrait;
 use Becklyn\Security\Application\ChangePassword;
 use Becklyn\Security\Domain\ChangePasswordForUser;
 use Becklyn\Security\Domain\User;
@@ -44,7 +44,7 @@ class ChangePasswordTest extends TestCase
 
         $this->givenTransactionIsBegun();
         $user = $this->givenAUserCanBeFoundByEmail($email);
-        $this->thenPasswordShouldBeChangedForUser($user, $password);
+        $this->thenPasswordShouldBeChangedForUser($user, $password, $this->fixture);
         $this->thenTransactionShouldBeCommitted();
         $this->thenTransactionShouldNotBeRolledBack();
 
@@ -54,9 +54,9 @@ class ChangePasswordTest extends TestCase
     /**
      * @param ObjectProphecy|User $user
      */
-    private function thenPasswordShouldBeChangedForUser(ObjectProphecy $user, string $newPassword): void
+    private function thenPasswordShouldBeChangedForUser(ObjectProphecy $user, string $newPassword, ChangePassword $command): void
     {
-        $this->changePasswordForUser->execute($user->reveal(), $newPassword)->shouldBeCalled();
+        $this->changePasswordForUser->execute($user->reveal(), $newPassword, $command)->shouldBeCalled();
     }
 
     private function whenChangePasswordIsExecuted(string $email, string $password): void

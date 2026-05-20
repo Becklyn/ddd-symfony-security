@@ -1,3 +1,14 @@
+1.0.6
+=====
+
+* (improvement) Add support for Symfony 7 (`^6.4 || ^7.0` constraints on all `symfony/*` deps).
+* (improvement) Bump `becklyn/ddd-symfony-bridge` requirement to `^5.0`.
+* (improvement) Add new `SymfonyCreateUser` application service using `UserPasswordHasherInterface`.
+* (breaking) `SymfonySecurity` no longer depends on the removed `Symfony\Component\Security\Core\Security`; it now depends on `TokenStorageInterface` directly.
+* (breaking) `ResetPasswordForUser::execute()` signature restored to accept `ResetPassword $command` as third argument (correlates domain events with the triggering command).
+* (breaking) Domain services `ChangePasswordForUser::execute()` and `RequestPasswordResetForUser::execute()` require their respective application command as the last argument (already introduced in 1.0.5; documented here for clarity).
+* (internal) Replace deprecated `Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface` (removed in SF6) with `Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface` in all infrastructure services and tests.
+
 1.0.5
 =====
 

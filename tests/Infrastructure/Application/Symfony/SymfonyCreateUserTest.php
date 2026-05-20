@@ -4,8 +4,8 @@ namespace Becklyn\Security\Tests\Infrastructure\Application\Symfony;
 
 use Becklyn\Ddd\Events\Domain\DomainEvent;
 use Becklyn\Ddd\Events\Domain\EventProvider;
-use Becklyn\Ddd\Events\Domain\DomainEventTestTrait;
-use Becklyn\Ddd\Transactions\Application\TransactionManagerTestTrait;
+use Becklyn\Ddd\Events\Testing\DomainEventTestTrait;
+use Becklyn\Ddd\Transactions\Testing\TransactionManagerTestTrait;
 use Becklyn\Security\Domain\UserCreated;
 use Becklyn\Security\Domain\UserId;
 use Becklyn\Security\Infrastructure\Application\Symfony\SymfonyCreateUser;
@@ -16,8 +16,8 @@ use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
 use Prophecy\PhpUnit\ProphecyTrait;
 use Prophecy\Prophecy\ObjectProphecy;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
-use Tightenco\Collect\Support\Collection;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Illuminate\Support\Collection;
 
 /**
  * @author Marko Vujnovic <mv@201created.de>
@@ -32,7 +32,7 @@ class SymfonyCreateUserTest extends TestCase
     use UserTestTrait;
 
     /**
-     * @var UserPasswordEncoderInterface|ObjectProphecy
+     * @var UserPasswordHasherInterface|ObjectProphecy
      */
     private $encoder;
 
@@ -43,7 +43,7 @@ class SymfonyCreateUserTest extends TestCase
         $this->initTransactionManagerTestTrait();
         $this->initDomainEventTestTrait();
         $this->initSymfonyUserTestTrait();
-        $this->encoder = $this->prophesize(UserPasswordEncoderInterface::class);
+        $this->encoder = $this->prophesize(UserPasswordHasherInterface::class);
 
         $this->fixture = new SymfonyCreateUser(
             $this->transactionManager->reveal(),
@@ -75,7 +75,7 @@ class SymfonyCreateUserTest extends TestCase
     private function givenThePlaintextPasswordIsEncoded(string $plaintextPassword): string
     {
         $encodedPassword = uniqid();
-        $this->encoder->encodePassword(Argument::any(), $plaintextPassword)->willReturn($encodedPassword);
+        $this->encoder->hashPassword(Argument::any(), $plaintextPassword)->willReturn($encodedPassword);
         return $encodedPassword;
     }
 
