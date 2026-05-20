@@ -22,72 +22,46 @@ use Illuminate\Support\Collection;
  * @author Marko Vujnovic <mv@201created.de>
  *
  * @since  2020-04-02
- *
- * @ORM\Entity
- * @ORM\Table(
- *     name="becklyn_users",
- *     uniqueConstraints={
- *          @ORM\UniqueConstraint(name="uniq_user_uuid", columns={"uuid"}),
- *          @ORM\UniqueConstraint(name="uniq_user_email", columns={"email"})
- *     }
- * )
  */
+#[ORM\Entity]
+#[ORM\Table(name: 'becklyn_users')]
+#[ORM\UniqueConstraint(name: 'uniq_user_uuid', columns: ['uuid'])]
+#[ORM\UniqueConstraint(name: 'uniq_user_email', columns: ['email'])]
 class DoctrineSymfonyUser implements SymfonyUser
 {
     use EventProviderCapabilities;
 
-    /**
-     * @ORM\Id
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\GeneratedValue(strategy="AUTO")
-     *
-     * Internal ids must be nullable otherwise Doctrine breaks when deleting records
-     */
+    // Internal ids must be nullable otherwise Doctrine breaks when deleting records
+    #[ORM\Id]
+    #[ORM\Column(name: 'id', type: 'integer')]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
     protected ?int $internalId = null;
 
-    /**
-     * @ORM\Column(name="uuid", type="string", length=36, unique=true, nullable=false)
-     */
+    #[ORM\Column(name: 'uuid', type: 'string', length: 36, unique: true, nullable: false)]
     protected string $id;
 
-    /**
-     * @ORM\Column(type="string", length=255, unique=true, nullable=false)
-     */
+    #[ORM\Column(type: 'string', length: 255, unique: true, nullable: false)]
     protected string $email;
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=false)
-     */
+    #[ORM\Column(type: 'string', length: 255, nullable: false)]
     protected string $password;
 
-    /**
-     * @ORM\Column(type="boolean")
-     */
+    #[ORM\Column(type: 'boolean')]
     protected bool $enabled = true;
 
-    /**
-     * @ORM\Column(type="json")
-     */
+    #[ORM\Column(type: 'json')]
     protected array $roles = [];
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
     protected ?string $passwordResetToken = null;
 
-    /**
-     * @ORM\Column(type="datetime_immutable", nullable=true)
-     */
+    #[ORM\Column(type: 'datetime_immutable', nullable: true)]
     protected ?\DateTimeImmutable $passwordResetRequestTs = null;
 
-    /**
-     * @ORM\Column(type="datetime_immutable", nullable=false)
-     */
+    #[ORM\Column(type: 'datetime_immutable', nullable: false)]
     protected \DateTimeImmutable $createdTs;
 
-    /**
-     * @ORM\Column(type="datetime_immutable", nullable=false)
-     */
+    #[ORM\Column(type: 'datetime_immutable', nullable: false)]
     protected \DateTimeImmutable $updatedTs;
 
     protected function __construct()
