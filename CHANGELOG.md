@@ -1,3 +1,11 @@
+2.1.0
+=====
+
+* (improvement) Add support for Doctrine ORM 3 (`^2.12 || ^3.0` constraint).
+* (improvement) Convert `DoctrineSymfonyUser` entity mapping from annotations to PHP attributes (required for ORM 3 compatibility).
+* (improvement) Switch bundle mapping registration from `createAnnotationMappingDriver` to `createAttributeMappingDriver`.
+* (improvement) Bump `becklyn/ddd-symfony-bridge` requirement to `^6.0`.
+
 2.0.0
 =====
 

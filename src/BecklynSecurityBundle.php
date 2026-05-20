@@ -22,7 +22,7 @@ class BecklynSecurityBundle extends Bundle
         $enabledParameter = false;
         $aliasMap = [];
         $container->addCompilerPass(
-            DoctrineOrmMappingsPass::createAnnotationMappingDriver(
+            DoctrineOrmMappingsPass::createAttributeMappingDriver(
                 $namespaces,
                 $directories,
                 $managerParameters,
