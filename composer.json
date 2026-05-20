@@ -2,7 +2,6 @@
     "name": "becklyn/ddd-symfony-security",
     "description": "Security component used in legacy 201Created projects",
     "license": "MIT",
-    "version": "2.1.0",
     "type": "symfony-bundle",
     "authors": [
         {
