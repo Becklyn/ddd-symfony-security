@@ -1,4 +1,4 @@
-1.0.6
+2.0.0
 =====
 
 * (improvement) Add support for Symfony 7 (`^6.4 || ^7.0` constraints on all `symfony/*` deps).
