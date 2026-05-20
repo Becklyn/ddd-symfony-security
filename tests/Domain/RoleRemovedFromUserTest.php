@@ -2,7 +2,7 @@
 
 namespace Becklyn\Security\Tests\Domain;
 
-use Becklyn\Ddd\Events\Domain\DomainEventTestTrait;
+use Becklyn\Ddd\Events\Testing\DomainEventTestTrait;
 use Becklyn\Security\Domain\RoleRemovedFromUser;
 use Becklyn\Security\Domain\User;
 use Becklyn\Security\Domain\UserTestTrait;

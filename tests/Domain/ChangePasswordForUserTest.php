@@ -2,7 +2,8 @@
 
 namespace Becklyn\Security\Tests\Domain;
 
-use Becklyn\Ddd\Events\Domain\DomainEventTestTrait;
+use Becklyn\Ddd\Events\Testing\DomainEventTestTrait;
+use Becklyn\Security\Application\ChangePassword;
 use Becklyn\Security\Domain\ChangePasswordForUser;
 use Becklyn\Security\Domain\EncodePasswordForUser;
 use Becklyn\Security\Domain\UserTestTrait;
@@ -34,10 +35,11 @@ class ChangePasswordForUserTest extends TestCase
     {
         $user = $this->givenAUser();
         $password = $this->givenAUserPassword();
+        $command = $this->prophesize(ChangePassword::class)->reveal();
         $encodedPassword = $this->givenPasswordIsEncodedForUser($user, $password);
         $this->thenPasswordShouldBeChangedForUser($user, $encodedPassword);
         $this->thenEventRegistryShouldDequeueAndRegister($user->reveal());
-        $this->whenChangePasswordForUserIsExecuted($user, $password);
+        $this->whenChangePasswordForUserIsExecuted($user, $password, $command);
     }
 
     private function givenPasswordIsEncodedForUser(ObjectProphecy $user, string $password): string
@@ -47,8 +49,8 @@ class ChangePasswordForUserTest extends TestCase
         return $encodedPassword;
     }
 
-    private function whenChangePasswordForUserIsExecuted(ObjectProphecy $user, string $password): void
+    private function whenChangePasswordForUserIsExecuted(ObjectProphecy $user, string $password, ChangePassword $command): void
     {
-        $this->fixture->execute($user->reveal(), $password);
+        $this->fixture->execute($user->reveal(), $password, $command);
     }
 }

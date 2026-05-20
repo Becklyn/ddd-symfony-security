@@ -19,7 +19,7 @@ class ChangePasswordForUser
     {
     }
 
-    public function execute(User $user, string $newPlainPassword, ChangePassword $command) : void
+    public function execute(User $user, string $newPlainPassword, ChangePassword $command): void
     {
         $newEncodedPassword = $this->encodePasswordForUser->execute($user, $newPlainPassword);
         $user->changePassword($newEncodedPassword);

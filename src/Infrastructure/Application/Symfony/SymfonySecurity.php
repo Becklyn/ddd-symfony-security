@@ -4,23 +4,24 @@ namespace Becklyn\Security\Infrastructure\Application\Symfony;
 
 use Becklyn\Security\Application\Security;
 use Becklyn\Security\Infrastructure\Domain\Symfony\SymfonyUser;
-use Symfony\Component\Security\Core\Security as BaseSymfonySecurity;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 
-/**
- * @author Marko Vujnovic <mv@201created.de>
- *
- * @since  2020-03-06
- */
 class SymfonySecurity implements Security
 {
-    public function __construct(private readonly BaseSymfonySecurity $security)
+    public function __construct(private readonly TokenStorageInterface $tokenStorage)
     {
     }
 
     public function getUser() : ?SymfonyUser
     {
-        /** @var SymfonyUser|null $user */
-        $user = $this->security->getUser();
-        return $user;
+        /** @var TokenInterface|null $token */
+        $token = $this->tokenStorage->getToken();
+        if (null === $token) {
+            return null;
+        }
+
+        $user = $token->getUser();
+        return $user instanceof SymfonyUser ? $user : null;
     }
 }

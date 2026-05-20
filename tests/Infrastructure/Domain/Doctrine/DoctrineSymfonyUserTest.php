@@ -15,7 +15,7 @@ use Becklyn\Security\Domain\UserEnabled;
 use Becklyn\Security\Infrastructure\Domain\Doctrine\DoctrineSymfonyUser;
 use Becklyn\Security\Domain\UserTestTrait;
 use PHPUnit\Framework\TestCase;
-use Tightenco\Collect\Support\Collection;
+use Illuminate\Support\Collection;
 
 /**
  * @author Marko Vujnovic <mv@201created.de>

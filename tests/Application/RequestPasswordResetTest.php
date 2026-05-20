@@ -2,7 +2,7 @@
 
 namespace Becklyn\Security\Tests\Application;
 
-use Becklyn\Ddd\Transactions\Application\TransactionManagerTestTrait;
+use Becklyn\Ddd\Transactions\Testing\TransactionManagerTestTrait;
 use Becklyn\Security\Application\RequestPasswordReset;
 use Becklyn\Security\Domain\GeneratePasswordResetToken;
 use Becklyn\Security\Domain\NotifyPasswordReset;
@@ -56,10 +56,10 @@ class RequestPasswordResetTest extends TestCase
         $this->givenTransactionIsBegun();
         $user = $this->givenAUserCanBeFoundByEmail($email);
         $token = $this->givenPasswordResetTokenIsGenerated();
-        $this->thenPasswordResetShouldBeRequestedForUserWithToken($user->reveal(), $token);
+        $this->thenPasswordResetShouldBeRequestedForUserWithToken($user, $token);
         $this->thenTransactionShouldBeCommitted();
         $this->thenTransactionShouldNotBeRolledBack();
-        $this->thenUserShouldBeNotifiedWithToken($user->reveal(), $token);
+        $this->thenUserShouldBeNotifiedWithToken($user, $token);
         $this->whenRequestPasswordResetIsExecutedForEmail($email);
     }
 
@@ -70,14 +70,24 @@ class RequestPasswordResetTest extends TestCase
         return $token;
     }
 
-    private function thenPasswordResetShouldBeRequestedForUserWithToken(User $user, string $token): void
+    private function thenPasswordResetShouldBeRequestedForUserWithToken(ObjectProphecy $user, string $token): void
     {
-        $this->requestPasswordResetForUser->execute($user, $token)->shouldBeCalled();
+        $this->requestPasswordResetForUser->execute($user->reveal(), $token, $this->fixture)->shouldBeCalled();
     }
 
-    private function thenUserShouldBeNotifiedWithToken(User $user, string $token): void
+    private function thenUserShouldBeNotifiedWithToken(ObjectProphecy $user, string $token): void
     {
-        $this->notifyPasswordReset->execute($user, $token)->shouldBeCalled();
+        $this->notifyPasswordReset->execute($user->reveal(), $token)->shouldBeCalled();
+    }
+
+    private function thenPasswordResetShouldNotBeRequested(): void
+    {
+        $this->requestPasswordResetForUser->execute(Argument::type(User::class), Argument::type('string'), Argument::type(RequestPasswordReset::class))->shouldNotBeCalled();
+    }
+
+    private function thenPasswordResetShouldNotBeNotified(): void
+    {
+        $this->notifyPasswordReset->execute(Argument::type(User::class), Argument::type('string'))->shouldNotBeCalled();
     }
 
     private function whenRequestPasswordResetIsExecutedForEmail(string $email): void
@@ -97,23 +107,13 @@ class RequestPasswordResetTest extends TestCase
         $this->whenRequestPasswordResetIsExecutedForEmail($email);
     }
 
-    private function thenPasswordResetShouldNotBeRequested(): void
-    {
-        $this->requestPasswordResetForUser->execute(Argument::any(), Argument::any())->shouldNotBeCalled();
-    }
-
-    private function thenPasswordResetShouldNotBeNotified(): void
-    {
-        $this->notifyPasswordReset->execute(Argument::any(), Argument::any())->shouldNotBeCalled();
-    }
-
     public function testTransactionIsRolledBackExceptionIsThrownResetIsNotNotifiedIfRequestingResetThrowsException(): void
     {
         $email = $this->givenAnUserEmail();
         $this->givenTransactionIsBegun();
         $user = $this->givenAUserCanBeFoundByEmail($email);
         $token = $this->givenPasswordResetTokenIsGenerated();
-        $this->givenRequestingPasswordResetForUserWithTokenThrowsException($user->reveal(), $token);
+        $this->givenRequestingPasswordResetForUserWithTokenThrowsException($user, $token);
         $this->thenTransactionShouldBeRolledBack();
         $this->thenTransactionShouldNotBeCommitted();
         $this->thenPasswordResetShouldNotBeNotified();
@@ -121,10 +121,10 @@ class RequestPasswordResetTest extends TestCase
         $this->whenRequestPasswordResetIsExecutedForEmail($email);
     }
 
-    private function givenRequestingPasswordResetForUserWithTokenThrowsException(User $user, string $token): \Exception
+    private function givenRequestingPasswordResetForUserWithTokenThrowsException(ObjectProphecy $user, string $token): \Exception
     {
         $e = new \Exception();
-        $this->requestPasswordResetForUser->execute($user, $token)->willThrow($e);
+        $this->requestPasswordResetForUser->execute($user->reveal(), $token, $this->fixture)->willThrow($e);
         return $e;
     }
 }

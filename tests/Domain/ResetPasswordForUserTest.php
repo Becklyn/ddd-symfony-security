@@ -2,7 +2,8 @@
 
 namespace Becklyn\Security\Tests\Domain;
 
-use Becklyn\Ddd\Events\Domain\DomainEventTestTrait;
+use Becklyn\Ddd\Events\Testing\DomainEventTestTrait;
+use Becklyn\Security\Application\ResetPassword;
 use Becklyn\Security\Domain\EncodePasswordForUser;
 use Becklyn\Security\Domain\ResetPasswordForUser;
 use Becklyn\Security\Domain\User;
@@ -36,10 +37,11 @@ class ResetPasswordForUserTest extends TestCase
         $user = $this->givenAUser();
         $password = $this->givenAUserPassword();
 
+        $command = $this->prophesize(ResetPassword::class)->reveal();
         $encodedPassword = $this->givenPasswordIsEncoded($user->reveal(), $password);
         $this->thenPasswordShouldBeResetForUser($user, $encodedPassword);
         $this->thenEventRegistryShouldDequeueAndRegister($user->reveal());
-        $this->whenRequestPasswordResetForUserIsExecuted($user->reveal(), $password);
+        $this->whenRequestPasswordResetForUserIsExecuted($user->reveal(), $password, $command);
     }
 
     private function givenPasswordIsEncoded(User $user, string $password): string
@@ -57,8 +59,8 @@ class ResetPasswordForUserTest extends TestCase
         $user->resetPassword($encodedPassword)->shouldBeCalled();
     }
 
-    private function whenRequestPasswordResetForUserIsExecuted(User $user, string $password)
+    private function whenRequestPasswordResetForUserIsExecuted(User $user, string $password, ResetPassword $command)
     {
-        $this->fixture->execute($user, $password);
+        $this->fixture->execute($user, $password, $command);
     }
 }

@@ -9,7 +9,7 @@ use Becklyn\Security\Infrastructure\Domain\Symfony\SymfonyUserTestTrait;
 use PHPUnit\Framework\TestCase;
 use Prophecy\PhpUnit\ProphecyTrait;
 use Prophecy\Prophecy\ObjectProphecy;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class SymfonyIsPasswordValidForUserTest extends TestCase
 {
@@ -18,7 +18,7 @@ class SymfonyIsPasswordValidForUserTest extends TestCase
     use SymfonyUserTestTrait;
 
     /**
-     * @var ObjectProphecy|UserPasswordEncoderInterface
+     * @var ObjectProphecy|UserPasswordHasherInterface
      */
     private ObjectProphecy $encoder;
 
@@ -26,7 +26,7 @@ class SymfonyIsPasswordValidForUserTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->encoder = $this->prophesize(UserPasswordEncoderInterface::class);
+        $this->encoder = $this->prophesize(UserPasswordHasherInterface::class);
         $this->fixture = new SymfonyIsPasswordValidForUser($this->encoder->reveal());
     }
 

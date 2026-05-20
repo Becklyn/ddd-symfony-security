@@ -28,7 +28,7 @@ class RequestPasswordReset extends AbstractCommand
         parent::__construct();
     }
 
-    public function execute(string $email) : void
+    public function execute(string $email): void
     {
         $this->transactionManager->begin();
 

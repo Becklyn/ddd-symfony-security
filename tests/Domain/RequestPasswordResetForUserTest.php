@@ -2,7 +2,8 @@
 
 namespace Becklyn\Security\Tests\Domain;
 
-use Becklyn\Ddd\Events\Domain\DomainEventTestTrait;
+use Becklyn\Ddd\Events\Testing\DomainEventTestTrait;
+use Becklyn\Security\Application\RequestPasswordReset;
 use Becklyn\Security\Domain\HashPasswordResetToken;
 use Becklyn\Security\Domain\RequestPasswordResetForUser;
 use Becklyn\Security\Domain\User;
@@ -36,10 +37,11 @@ class RequestPasswordResetForUserTest extends TestCase
         $user = $this->givenAUser();
         $token = $this->givenAPasswordResetToken();
 
+        $command = $this->prophesize(RequestPasswordReset::class)->reveal();
         $hashedToken = $this->givenTokenIsHashed($token);
         $this->thenPasswordResetShouldBeRequestedForUser($user, $hashedToken);
         $this->thenEventRegistryShouldDequeueAndRegister($user->reveal());
-        $this->whenRequestPasswordResetForUserIsExecuted($user->reveal(), $token);
+        $this->whenRequestPasswordResetForUserIsExecuted($user->reveal(), $token, $command);
     }
 
     private function givenTokenIsHashed(string $token): string
@@ -57,8 +59,8 @@ class RequestPasswordResetForUserTest extends TestCase
         $user->requestPasswordReset($hashedToken)->shouldBeCalled();
     }
 
-    private function whenRequestPasswordResetForUserIsExecuted(User $user, string $token)
+    private function whenRequestPasswordResetForUserIsExecuted(User $user, string $token, RequestPasswordReset $command)
     {
-        $this->fixture->execute($user, $token);
+        $this->fixture->execute($user, $token, $command);
     }
 }

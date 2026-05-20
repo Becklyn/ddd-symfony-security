@@ -2,7 +2,7 @@
 
 namespace Becklyn\Security\Tests\Application;
 
-use Becklyn\Ddd\Transactions\Application\TransactionManagerTestTrait;
+use Becklyn\Ddd\Transactions\Testing\TransactionManagerTestTrait;
 use Becklyn\Security\Application\ResetPassword;
 use Becklyn\Security\Domain\ResetPasswordForUser;
 use Becklyn\Security\Domain\User;
@@ -39,15 +39,15 @@ class ResetPasswordTest extends TestCase
         $password = $this->givenAUserPassword();
         $this->givenTransactionIsBegun();
         $user = $this->givenAUserCanBeFoundByEmail($email);
-        $this->thenPasswordShouldBeResetForUser($user->reveal(), $password);
+        $this->thenPasswordShouldBeResetForUser($user, $password);
         $this->thenTransactionShouldBeCommitted();
         $this->thenTransactionShouldNotBeRolledBack();
         $this->whenResetPasswordIsExecuted($email, $password);
     }
 
-    private function thenPasswordShouldBeResetForUser(User $user, string $password): void
+    private function thenPasswordShouldBeResetForUser(ObjectProphecy $user, string $password): void
     {
-        $this->resetPasswordForUser->execute($user, $password)->shouldBeCalled();
+        $this->resetPasswordForUser->execute($user->reveal(), $password, $this->fixture)->shouldBeCalled();
     }
 
     private function whenResetPasswordIsExecuted(string $email, string $password): void
@@ -70,6 +70,6 @@ class ResetPasswordTest extends TestCase
 
     private function thenPasswordShouldNotBeResetForUser(): void
     {
-        $this->resetPasswordForUser->execute(Argument::any(), Argument::any())->shouldNotBeCalled();
+        $this->resetPasswordForUser->execute(Argument::any(), Argument::any(), Argument::any())->shouldNotBeCalled();
     }
 }
